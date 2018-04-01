@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BashSoft.Contracts;
+using BashSoft.Exceptions;
+using System;
 using System.IO;
 
 namespace BashSoft
 {
-    public static class Tester
+    public class Tester:IContentComparer
     {
-        public static void CompareContent(string userOutputPath, string expectedOutputPath)
+        public void CompareContent(string userOutputPath, string expectedOutputPath)
         {
-            OutputWriter.WriteMessageOnNewLine("Reading files...");
             try
             {
+                OutputWriter.WriteMessageOnNewLine("Reading files...");
+
                 string mismatchesPath = GetMismatchesPath(expectedOutputPath);
 
                 string[] actualOutputLines = File.ReadAllLines(userOutputPath);
@@ -25,16 +24,16 @@ namespace BashSoft
                 PrintOutput(mismatches, hasMismatch, mismatchesPath);
                 OutputWriter.WriteMessageOnNewLine("Files read!");
             }
-            catch (FileNotFoundException)
+            catch (IOException)
             {
-                OutputWriter.DisplayException(ExceptionMessages.InvalidPath);
+                throw new InvalidPathException();
             }
 
 
 
         }
 
-        private static string GetMismatchesPath(string expectedOutputPath)
+        private string GetMismatchesPath(string expectedOutputPath)
         {
             int index = expectedOutputPath.LastIndexOf('/');
             string directoryPath = expectedOutputPath.Substring(0, index);
@@ -42,7 +41,7 @@ namespace BashSoft
             return finalPath;
         }
 
-        private static string[] GetLinesWithPossibleMismatches(
+        private string[] GetLinesWithPossibleMismatches(
             string[] actualOutputLines, string[] expectedOutputLines, out bool hasMismatch)
         {
             hasMismatch = false;
@@ -82,7 +81,7 @@ namespace BashSoft
             return mismatches;
         }
 
-        private static void PrintOutput(string[] mismatches, bool hasMismatch, string mismatchesPath)
+        private void PrintOutput(string[] mismatches, bool hasMismatch, string mismatchesPath)
         {
             if (hasMismatch)
             {
@@ -90,15 +89,14 @@ namespace BashSoft
                 {
                     OutputWriter.WriteMessageOnNewLine(line);
                 }
-                try
-                {
-                    File.WriteAllLines(mismatchesPath, mismatches);
-                }
-                catch (DirectoryNotFoundException)
-                {
 
-                    OutputWriter.DisplayException(ExceptionMessages.InvalidPath);
-                }
+                File.WriteAllLines(mismatchesPath, mismatches);
+
+                //catch (DirectoryNotFoundException)
+                //{
+
+                //    OutputWriter.DisplayException(ExceptionMessages.InvalidPath);
+                //}
 
 
             }

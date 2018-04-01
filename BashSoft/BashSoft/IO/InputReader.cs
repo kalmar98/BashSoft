@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BashSoft.Contracts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,12 +7,19 @@ using System.Threading.Tasks;
 
 namespace BashSoft
 {
-    public static class InputReader
+    public class InputReader:IReader
     {
         private const string endCommand = "quit";
-        public static void StartReadingCommands()
+        private IInterpreter commandInterpreter;
+
+        public InputReader(IInterpreter commandInterpreter)
         {
-            
+            this.commandInterpreter = commandInterpreter;
+        }
+
+        public void StartReadingCommands()
+        {
+
             while (true)
             {
                 OutputWriter.WriteMessage($"{SessionData.Path}> ");
@@ -21,10 +29,10 @@ namespace BashSoft
                 {
                     break;
                 }
-                CommandInterpreter.InterpretedCommand(input);
+                commandInterpreter.InterpretCommand(input);
 
             }
-            
+
         }
     }
 }

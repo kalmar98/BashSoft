@@ -28,23 +28,35 @@ namespace BashSoft
             Console.WriteLine(message);
             Console.ForegroundColor = currentColor;
         }
-        public static void DisplayStudent(KeyValuePair <string,List<int>> student)
+        public static void DisplayStudent(KeyValuePair<string, double> student)
         {
-            WriteMessageOnNewLine(string.Format($"{student.Key} - {string.Join(", ",student.Value)}"));
+            WriteMessageOnNewLine(string.Format($"{student.Key} - {string.Join(", ", student.Value)}"));
         }
         public static void DisplayHelp(string helpPath)
         {
             ConsoleColor currentColor = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.DarkGreen;
-
-            string[] helpLines = File.ReadAllLines(helpPath);
-
-            for (int i = 0; i < helpLines.Length; i++)
+            try
             {
-                Console.WriteLine(helpLines[i]);
+                Console.ForegroundColor = ConsoleColor.DarkGreen;
+
+                string[] helpLines = File.ReadAllLines(helpPath);
+
+                for (int i = 0; i < helpLines.Length; i++)
+                {
+                    Console.WriteLine(helpLines[i]);
+                }
+            }
+            catch (Exception)
+            {
+                OutputWriter.DisplayException("You can access command 'help' only in the root project folder!");
+            }
+            finally
+            {
+                Console.ForegroundColor = currentColor;
             }
             
-            Console.ForegroundColor = currentColor;
+
+            
         }
 
     }

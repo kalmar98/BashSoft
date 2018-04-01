@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BashSoft.Contracts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,9 +10,16 @@ namespace BashSoft
 {
     class Launcher
     {
-        static void Main()
+        public static void Main()
         {
-            InputReader.StartReadingCommands();
+            IContentComparer tester = new Tester();
+            IDirectoryManager ioManager = new IOManager();
+            IDatabase studentsRepository = new StudentsRepository(new RepositoryFilter(), new RepositorySorter());
+
+            IInterpreter commandInterpreter = new CommandInterpreter(tester, studentsRepository, ioManager);
+            IReader reader = new InputReader(commandInterpreter);
+
+            reader.StartReadingCommands();
         }
     }
 }
